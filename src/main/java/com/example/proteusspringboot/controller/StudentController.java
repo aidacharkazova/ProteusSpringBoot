@@ -1,7 +1,9 @@
 package com.example.proteusspringboot.controller;
 
-import com.example.proteusspringboot.model.Student;
+import com.example.proteusspringboot.dto.StudentRequestDto;
+import com.example.proteusspringboot.dto.StudentResponseDto;
 import com.example.proteusspringboot.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,33 +21,34 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() {
+    public ResponseEntity<List<StudentResponseDto>> getAllStudents() {
         return ResponseEntity.ok(studentService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
-
-            return ResponseEntity.ok(studentService.findById(id));
-
+    public ResponseEntity<StudentResponseDto> getStudentById(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        Student created = studentService.create(student);
+    public ResponseEntity<StudentResponseDto> createStudent(
+            @Valid @RequestBody StudentRequestDto dto) {
+
+        StudentResponseDto created = studentService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student student) {
+    public ResponseEntity<StudentResponseDto> updateStudent(
+            @PathVariable Long id,
+            @Valid @RequestBody StudentRequestDto dto) {
 
-            return ResponseEntity.ok(studentService.update(id, student));
-
+        return ResponseEntity.ok(studentService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
-            studentService.deleteById(id);
-            return ResponseEntity.noContent().build();
+        studentService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
